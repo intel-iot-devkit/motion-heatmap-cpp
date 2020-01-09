@@ -12,7 +12,7 @@
 using namespace std;
 using namespace cv;
 
-void main()
+int main()
 {
 	//Capturing video
 	int option;
@@ -28,7 +28,7 @@ void main()
 		cout<<"Enter video file name (with extension): "; // input video should be on same worksapce folder
 		cin>>vid_file;
 		cap.open(vid_file);
-		nFrames = cap.get(CV_CAP_PROP_FRAME_COUNT);
+		nFrames = cap.get(CAP_PROP_FRAME_COUNT);
 	}
 	else
 		cout<<"enter valid option !"<<endl;
@@ -40,10 +40,10 @@ void main()
 	}
 
 	// Default resolution of the frame is obtained.The default resolution is system dependent.
-	int frame_width = cap.get(CV_CAP_PROP_FRAME_WIDTH) , frame_height = cap.get(CV_CAP_PROP_FRAME_HEIGHT);
+	int frame_width = cap.get(CAP_PROP_FRAME_WIDTH) , frame_height = cap.get(CAP_PROP_FRAME_HEIGHT);
 
 	//Video saving APIs
-	VideoWriter video2("heatmap_video.avi",CV_FOURCC('M','J','P','G'),10, Size(frame_width,frame_height));
+	VideoWriter video2("heatmap_video.avi",cv::VideoWriter::fourcc('M','J','P','G'),10, Size(frame_width,frame_height));
 
 	//begsegmentation pointer initialised
 	Ptr<BackgroundSubtractorMOG2> background_segmentor_object_file = createBackgroundSubtractorMOG2();
@@ -67,7 +67,7 @@ void main()
 			//Converting to Grayscale
 			cvtColor(frame,gray, COLOR_BGR2GRAY);
 			//accum_image frame dimension initialisation
-			Mat accum_image = Mat(frame_height,frame_width, CV_64F, double(0));
+			accum_image = Mat(frame_height,frame_width, CV_8U, double(0));
 			first_iteration_indicator=0;
 		}
 		else
@@ -79,7 +79,7 @@ void main()
 			background_segmentor_object_file ->apply(gray,fgbgmask);
 			//Thresholding the image
 			int thres=2,maxValue=2;
-			threshold(fgbgmask,threshold_image,thres,maxValue,CV_THRESH_BINARY);
+			threshold(fgbgmask,threshold_image,thres,maxValue,THRESH_BINARY);
 			//Adding to the accumilated image
 			accum_image = threshold_image+accum_image;
 			//Saving the accumilated image onto a duplicate frame to plot a live heatmap
@@ -121,5 +121,5 @@ void main()
 	cap.release();
 	// Closes all the windows
 	destroyAllWindows();
-
+    return 0;
 }
